@@ -21,6 +21,7 @@ jobs:
             cancel-in-progress: true
         env:
             RAILWAY_TOKEN: ${{ secrets.TEST_RAILWAY_TOKEN }}
+            RAILWAY_PROJECT: ${{ secrets.TEST_RAILWAY_PROJECT }}
             RAILWAY_ENVIRONMENT: ${{ secrets.TEST_RAILWAY_ENVIRONMENT }}
             RAILWAY_SERVICE: ${{ vars.TEST_RAILWAY_SERVICE || 'test' }}
         steps:

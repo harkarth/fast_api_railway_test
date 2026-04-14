@@ -1,0 +1,51 @@
+name: Deploy Test
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - ".github/workflows/deploy_test.yml"
+            - "main.py"
+            - "pyproject.toml"
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        container: ghcr.io/railwayapp/cli:latest
+        permissions:
+            contents: read
+        concurrency:
+            group: railway-test
+            cancel-in-progress: true
+        env:
+            RAILWAY_TOKEN: ${{ secrets.TEST_RAILWAY_TOKEN }}
+            RAILWAY_ENVIRONMENT: ${{ secrets.TEST_RAILWAY_ENVIRONMENT }}
+            RAILWAY_SERVICE: ${{ vars.TEST_RAILWAY_SERVICE || 'test' }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Sync Test Variables
+              env:
+                  ALLOWED_IPS: ${{ secrets.TEST_ALLOWED_IPS }}
+                  AUTH_USERNAME: ${{ secrets.TEST_AUTH_USERNAME }}
+                  AUTH_PASSWORD: ${{ secrets.TEST_AUTH_PASSWORD }}
+              run: |
+                  set -euo pipefail
+
+                  set_var() {
+                      local key="$1"
+                      local value="${2-}"
+                      if [[ -z "$value" ]]; then
+                          return 0
+                      fi
+                      printf '%s' "$value" | railway variables set "$key" --stdin --service "$RAILWAY_SERVICE" --environment "$RAILWAY_ENVIRONMENT" --skip-deploys
+                  }
+
+                  set_var ALLOWED_IPS "$ALLOWED_IPS"
+                  set_var AUTH_USERNAME "$AUTH_USERNAME"
+                  set_var AUTH_PASSWORD "$AUTH_PASSWORD"
+
+            - name: Deploy Test To Railway
+              run: railway up --service "$RAILWAY_SERVICE" --environment "$RAILWAY_ENVIRONMENT" --ci

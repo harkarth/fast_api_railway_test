@@ -20,18 +20,18 @@ jobs:
             group: railway-test
             cancel-in-progress: true
         env:
-            RAILWAY_TOKEN: ${{ secrets.TEST_RAILWAY_TOKEN }}
-            RAILWAY_PROJECT: ${{ secrets.TEST_RAILWAY_PROJECT }}
-            RAILWAY_ENVIRONMENT: ${{ secrets.TEST_RAILWAY_ENVIRONMENT }}
-            RAILWAY_SERVICE: ${{ vars.TEST_RAILWAY_SERVICE || 'test' }}
+            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+            RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
+            RAILWAY_ENVIRONMENT: ${{ secrets.RAILWAY_ENVIRONMENT }}
+            RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE || 'blank_name_lol' }}
         steps:
             - uses: actions/checkout@v4
 
             - name: Sync Test Variables
               env:
-                  ALLOWED_IPS: ${{ secrets.TEST_ALLOWED_IPS }}
-                  AUTH_USERNAME: ${{ secrets.TEST_AUTH_USERNAME }}
-                  AUTH_PASSWORD: ${{ secrets.TEST_AUTH_PASSWORD }}
+                  ALLOWED_IPS: ${{ secrets.ALLOWED_IPS }}
+                  AUTH_USERNAME: ${{ secrets.AUTH_USERNAME }}
+                  AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
               run: |
                   set -euo pipefail
 
